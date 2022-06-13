@@ -49,7 +49,6 @@ class Agent:
         self.env.render()
 
 def main():
-    print("MAC0318 - Assignment 1")
     # We'll use our version of Duckietown: Duckievillage. This environment will be where we'll run most
     # our tasks.
     env = create_env(
