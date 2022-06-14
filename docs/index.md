@@ -5,4 +5,4 @@ Supervisionado por **Denis Deratani Mauá**
 
 ### Resumo do Trabalho
 
-Utilizar de _Reinforcimente Learning_, uma ferramenta poderosa da inteligência artificial, para treinar um agente (robo) para se mover em um circuito sem sair dele ou cometer infrações. Para isso será utilizado o simulador [Duckitonw](https://www.duckietown.org) para treinar e desenvoler o agente
+Utilizar de _Reinforcimente Learning_, uma ferramenta poderosa da inteligência artificial, para treinar um agente (robo) para se mover em um circuito sem sair dele ou cometer infrações. Para isso será utilizado o simulador [Duckietown](https://www.duckietown.org) para treinar e desenvoler o agente
