@@ -11,24 +11,24 @@ import numpy as np
 from tf_agents.environments import py_environment
 from tf_agents.environments import tf_environment
 from tf_agents.environments import tf_py_environment
-from tf_agents.environments import utils
 from tf_agents.specs import array_spec
 from tf_agents.environments import wrappers
 from tf_agents.environments import suite_gym
 from tf_agents.trajectories import time_step as ts
 
-
 import cv2
 
 
-class Environment(DuckievillageEnv):
+OBSERVATION_SHAPE = (60, 80, 3)
+
+class Environment(DuckievillageEnv, py_environment.PyEnvironment):
 	def __init__(self,
 				 interative: Optional[bool] = False,
 				 **kwargs):
 		super().__init__(**kwargs)
 		self.eval = Evaluator(self)
 		self._current_time_step = None
-		self._interative = True
+		self._interative = interative
 		self._action_spec = array_spec.BoundedArraySpec(
 			shape=(2,),
 			dtype=np.float32,
@@ -37,8 +37,8 @@ class Environment(DuckievillageEnv):
 			name='action'
 		)
 		self._observation_spec = array_spec.BoundedArraySpec(
-			shape=(60, 80, 3),
-			dtype=np.int32,
+			shape=OBSERVATION_SHAPE,
+			dtype=np.uint8,
 			minimum=0,
 			maximum=255,
 			name='observation'
@@ -49,8 +49,10 @@ class Environment(DuckievillageEnv):
 	def _reset(self):
 		"""Return initial_time_step."""
 		super().reset()
-		return ts.restart(np.array([None], dtype=np.ndarray))
-		# return ts.restart(np.array([self._state()], dtype=np.ndarray))
+		# return ts.restart(np.array([None], dtype=np.ndarray))
+		return ts.restart(
+			self._state()
+		)
 
 	def _step(self, action):
 
@@ -70,17 +72,24 @@ class Environment(DuckievillageEnv):
 
 		if reward == -1:
 			return ts.termination(
-				np.array([self._state()], dtype=np.ndarray), self.eval.total_score)
+				self._state(),
+				self.eval.total_score
+			)
 
 		return ts.transition(
-			np.array([self._state()], dtype=np.ndarray),
+			[self._state()],
 			reward=reward,
-			discount=1.0
+			discount=0
 		)
 
-	def _state(self):
-		I = cv2.resize(self.front(), (80, 60))/255
-		return I.reshape((-1, 60, 80, 3))
+	def _state(self): 
+		if hasattr(self, 'mailbox'):
+			I = cv2.resize(self.front(), (80, 60))
+			I = I.reshape(OBSERVATION_SHAPE)
+			print(I.shape)
+			return I
+		else:
+			np.zeros(OBSERVATION_SHAPE, dtype=np.uint8)
 
 	def current_time_step(self):
 		return self._current_time_step
