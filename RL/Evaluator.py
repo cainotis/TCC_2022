@@ -1,6 +1,8 @@
 from duckievillage import Evaluator as Base
 import math
 
+epsilon = 1e-5
+
 class EvaluationError(Exception):
 	def __init__(self, message, errors = None):
 		super().__init__(message)
@@ -11,6 +13,7 @@ class Evaluator(Base):
 		env.max_steps = math.inf
 		self._env = env
 		self._log = {}
+		self._score = 0
 
 	def infraction(self, t: str, penalty: float, warning: str):
 		print(warning)
@@ -25,3 +28,10 @@ class Evaluator(Base):
 			self.infraction(r, -1, "Mailduck has gone off-road!")
 		if r == "crash":
 			self.infraction(r, -1, "Mailduck has crashed into something!")
+
+	def reward(self):
+		self.track()
+		self._score = (self._env.speed + self._score*2/3) / 3
+		if self._score < epsilon:
+			self._score = 0
+		return self._score

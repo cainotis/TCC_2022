@@ -3,7 +3,7 @@ import pyglet
 from pyglet.window import key
 from duckievillage import create_env
 
-from RL import Evaluator, EvaluationError
+from RL import Environment, EvaluationError
 
 class Agent:
 	# Agent initialization
@@ -54,8 +54,8 @@ def main():
 	# We'll use our version of Duckietown: Duckievillage. This environment will be where we'll run most
 	# our tasks.
 
-	env = create_env(
-		raw_motor_input = True,
+	env = Environment(
+		
 		seed = 101,
 		# map_name = 'loop_empty',
 		draw_curve = False,
@@ -64,14 +64,12 @@ def main():
 		distortion = False,
 		top_down = False,
 
-		# enable_eval = True,
+		enable_eval = True,
 
 		map_name = 'loop_empty',
 		is_external_map = False,
-		noisy = True,
+		
 	)
-
-	env.eval = Evaluator(env)
 
 	# Let's reset the environment to get our Duckiebot somewhere random.
 	env.reset()
@@ -89,15 +87,11 @@ def main():
 
 	# Instantiante agent
 	agent = Agent(env)
-	score = 0
 
 	def loop(dt: float):
 		try:
-			nonlocal score
-			score = env.speed + score*2/3
 			agent.send_commands(dt)
-			env.eval.track()
-			print(f"Score : {score}")
+			print(f"Score : {env.eval.reward()}")
 		except EvaluationError as e:
 			env.close()
 			sys.exit(0)
