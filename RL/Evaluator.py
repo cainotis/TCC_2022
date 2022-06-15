@@ -30,8 +30,15 @@ class Evaluator(Base):
 			self.infraction(r, -1, "Mailduck has crashed into something!")
 
 	def reward(self):
-		self.track()
-		self._score = (self._env.speed + self._score*2/3) / 3
-		if self._score < epsilon:
-			self._score = 0
-		return self._score
+		try:
+			self.track()
+			self._score = (self._env.speed + self._score) / 2
+			if self._score < epsilon:
+				self._score = 0
+
+		except EvaluationError as e:
+			self._score = -1
+
+		finally:
+			return self._score
+		

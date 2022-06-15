@@ -2,6 +2,7 @@ import sys
 import pyglet
 from pyglet.window import key
 from duckievillage import create_env
+import cv2
 
 from RL import Environment, EvaluationError
 
@@ -45,10 +46,9 @@ class Agent:
 		# currently seeing), a reward (mostly used for reinforcement learning), whether the episode is
 		# done (also used for reinforcement learning) and some info on the elapsed episode.  Let's ignore
 		# return values for now.
-		obs, reward, done, info = self.env.step(pwm_left, pwm_right)
+		obs, reward, done, info = self.env.step(pwm_left=pwm_left, pwm_right=pwm_right)
 
-		# Refresh at every update.
-		self.env.render()
+		
 
 def main():
 	# We'll use our version of Duckietown: Duckievillage. This environment will be where we'll run most
@@ -64,14 +64,16 @@ def main():
 		distortion = False,
 		top_down = False,
 
-		enable_eval = True,
-
 		map_name = 'loop_empty',
 		is_external_map = False,
 		
+		enable_eval = True,
+		interative = True,
 	)
 
 	# Let's reset the environment to get our Duckiebot somewhere random.
+
+
 	env.reset()
 	# This function is used to draw the environment to a graphical user interface using Pyglet.
 	env.render()
@@ -87,6 +89,7 @@ def main():
 
 	# Instantiante agent
 	agent = Agent(env)
+	track_dt = 0
 
 	def loop(dt: float):
 		try:
