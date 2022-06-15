@@ -14,6 +14,7 @@ class Evaluator(Base):
 		self._env = env
 		self._log = {}
 		self._score = 0
+		self.total_score = 0
 
 	def infraction(self, t: str, penalty: float, warning: str):
 		print(warning)
@@ -40,5 +41,6 @@ class Evaluator(Base):
 			self._score = -1
 
 		finally:
+			self.total_score += self._score
 			return self._score
 		

@@ -46,7 +46,7 @@ class Agent:
 		# currently seeing), a reward (mostly used for reinforcement learning), whether the episode is
 		# done (also used for reinforcement learning) and some info on the elapsed episode.  Let's ignore
 		# return values for now.
-		obs, reward, done, info = self.env.step(pwm_left=pwm_left, pwm_right=pwm_right)
+		obs, reward, done, info = self.env.step((pwm_left, pwm_right))
 
 		
 
@@ -72,8 +72,6 @@ def main():
 	)
 
 	# Let's reset the environment to get our Duckiebot somewhere random.
-
-
 	env.reset()
 	# This function is used to draw the environment to a graphical user interface using Pyglet.
 	env.render()
