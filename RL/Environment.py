@@ -77,7 +77,7 @@ class Environment(DuckievillageEnv, py_environment.PyEnvironment):
 			)
 
 		return ts.transition(
-			[self._state()],
+			self._state(),
 			reward=reward,
 			discount=0
 		)
@@ -86,7 +86,6 @@ class Environment(DuckievillageEnv, py_environment.PyEnvironment):
 		if hasattr(self, 'mailbox'):
 			I = cv2.resize(self.front(), (80, 60))
 			I = I.reshape(OBSERVATION_SHAPE)
-			print(I.shape)
 			return I
 		else:
 			np.zeros(OBSERVATION_SHAPE, dtype=np.uint8)

@@ -20,13 +20,12 @@ def main():
 		distortion = False,
 		top_down = False,
 
-		# enable_eval = True,
-
 		map_name = 'loop_empty',
 		is_external_map = False,
+		# interative = True,
 	)
 
-	# env.reset()
+	env.reset()
 
 	utils.validate_py_environment(env, episodes=5)
 
