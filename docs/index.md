@@ -1,6 +1,7 @@
 ## Desenvolvimento de Robo seguidor de percurso utilizando por aprendizado por reforço
 
 Trabalho de Conclusão de Curso do Aluno **Cainã Setti Galante**
+
 Supervisionado por **Denis Deratani Mauá**
 
 ### Resumo do Trabalho
