@@ -64,8 +64,8 @@ def main():
 		distortion = False,
 		top_down = False,
 
-		map_name = 'loop_empty',
-		is_external_map = False,
+		map_name = 'maps/circuit.yaml',
+		is_external_map = True,
 		
 		enable_eval = True,
 		interative = True,
