@@ -16,6 +16,8 @@ class Evaluator(Base):
 		self._score = 0
 		self.total_score = 0
 
+		self._last_tiles = [self._env.current_tile()] * 2
+
 	def infraction(self, t: str, penalty: float, warning: str):
 		print(warning)
 		if t not in self._log: self._log[t] = []
@@ -30,7 +32,7 @@ class Evaluator(Base):
 		if r == "crash":
 			self.infraction(r, -1, "Mailduck has crashed into something!")
 
-	def reward(self):
+	def reward(self) -> float:
 		try:
 			self.track()
 			self._score = (self._env.speed + self._score) / 2
@@ -39,8 +41,22 @@ class Evaluator(Base):
 
 		except EvaluationError as e:
 			self._score = -1
+			return self._score
 
 		finally:
-			self.total_score += self._score
-			return self._score
-		
+			bonus = self.bonus()
+			self.total_score += self._score + bonus
+			return (self._score + bonus)
+	
+	def bonus(self) -> float:
+		amount = 0
+
+		current_tile = self._env.current_tile()
+		if not (current_tile in self._last_tiles):
+			self._last_tiles[1] = self._last_tiles[0]
+			self._last_tiles[0] = current_tile
+			amount += 10
+
+
+		return amount
+

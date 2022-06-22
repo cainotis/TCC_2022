@@ -9,7 +9,7 @@
 	- talvez usar ActionDiscretizeWrapper, RunStats e TimeLimit
 
 - [ ] Colocar um TimeLimit
-- [ ] Mudar para pontuar quando for para uma tile que diferente das duas ultimas
+- [X] Mudar para pontuar quando for para uma tile que diferente das duas ultimas
 
 
 ## Outros

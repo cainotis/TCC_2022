@@ -46,7 +46,7 @@ class Agent:
 		# currently seeing), a reward (mostly used for reinforcement learning), whether the episode is
 		# done (also used for reinforcement learning) and some info on the elapsed episode.  Let's ignore
 		# return values for now.
-		obs, reward, done, info = self.env.step((pwm_left, pwm_right))
+		return self.env.step((pwm_left, pwm_right))
 
 		
 
@@ -67,7 +67,11 @@ def main():
 		map_name = 'maps/circuit.yaml',
 		is_external_map = True,
 		
-		enable_eval = True,
+		## testing
+		# enable_gps = True,
+		# enable_topomap = True,
+
+
 		interative = True,
 	)
 
@@ -91,8 +95,10 @@ def main():
 
 	def loop(dt: float):
 		try:
-			agent.send_commands(dt)
-			print(f"Score : {env.eval.reward()}")
+			score = agent.send_commands(dt).reward
+			print(f"Score : {score}")
+			# print(f"Tile : {env.current_tile()}")
+
 		except EvaluationError as e:
 			env.close()
 			sys.exit(0)
