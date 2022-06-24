@@ -10,7 +10,7 @@ from tf_agents.agents.reinforce import reinforce_agent
 
 from tf_agents.drivers import py_driver
 
-from tf_agents.environments import tf_environment
+from tf_agents.environments import TimeLimit
 from tf_agents.environments import tf_py_environment
 from tf_agents.environments import utils
 
@@ -33,8 +33,10 @@ from RL import Environment, EvaluationError
 
 from RL.utils import next_path
 
+import reverb
 
-num_iterations = 2 #50 # @param {type:"integer"}
+
+num_iterations = 2 #250 # @param {type:"integer"}
 collect_episodes_per_iteration = 2 # @param {type:"integer"}
 replay_buffer_capacity = 2000 # @param {type:"integer"}
 
@@ -57,7 +59,7 @@ def main():
 
 		map_name = 'loop_empty',
 		is_external_map = False,
-		interative = True,
+		# interative = True,
 	)
 
 	train_py_env.reset()
@@ -75,12 +77,15 @@ def main():
 		is_external_map = True,
 		
 		enable_eval = True,
-		interative = True,
+		# interative = True,
 	)
 
 
 	# utils.validate_py_environment(train_py_env, episodes=5)
 	# utils.validate_py_environment(eval_py_env, episodes=5)
+
+	train_py_env = TimeLimit(env=train_py_env, duration = 1000)
+	eval_py_env = TimeLimit(env=eval_py_env, duration = 1000)
 
 	train_env = tf_py_environment.TFPyEnvironment(train_py_env)
 	eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
@@ -113,6 +118,39 @@ def main():
 	collect_policy = tf_agent.collect_policy
 
 	saver = PolicySaver(eval_policy, batch_size=None)
+
+	# Replay Buffer
+
+	table_name = 'uniform_table'
+	replay_buffer_signature = tensor_spec.from_spec(
+		tf_agent.collect_data_spec
+	)
+	replay_buffer_signature = tensor_spec.add_outer_dim(
+		replay_buffer_signature
+	)
+	table = reverb.Table(
+		table_name,
+		max_size=replay_buffer_capacity,
+		sampler=reverb.selectors.Uniform(),
+		remover=reverb.selectors.Fifo(),
+		rate_limiter=reverb.rate_limiters.MinSize(1),
+		signature=replay_buffer_signature
+	)
+
+	reverb_server = reverb.Server([table])
+
+	replay_buffer = reverb_replay_buffer.ReverbReplayBuffer(
+		tf_agent.collect_data_spec,
+		table_name=table_name,
+		sequence_length=None,
+		local_server=reverb_server
+	)
+
+	rb_observer = reverb_utils.ReverbAddEpisodeObserver(
+		replay_buffer.py_client,
+		table_name,
+		replay_buffer_capacity
+	)
 
 	# (Optional) Optimize by wrapping some of the code in a graph using TF function.
 	tf_agent.train = common.function(tf_agent.train)
@@ -192,18 +230,18 @@ def compute_avg_return(environment, policy, num_episodes=10):
 
 ## Data Collection
 
-# def collect_episode(environment, policy, num_episodes):
+def collect_episode(environment, policy, num_episodes):
 
-# 	driver = py_driver.PyDriver(
-# 		environment,
-# 		py_tf_eager_policy.PyTFEagerPolicy(
-# 			policy, 
-# 			use_tf_function=True
-# 		),
-# 		max_episodes=num_episodes
-# 	)
-# 	initial_time_step = environment.reset()
-# 	driver.run(initial_time_step)
+	driver = py_driver.PyDriver(
+		environment,
+		py_tf_eager_policy.PyTFEagerPolicy(
+			policy, 
+			use_tf_function=True
+		),
+		max_episodes=num_episodes
+	)
+	initial_time_step = environment.reset()
+	driver.run(initial_time_step)
 
 if __name__ == '__main__':
 	main()
