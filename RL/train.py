@@ -35,8 +35,10 @@ from RL.utils import next_path
 
 import reverb
 
+from alive_progress import alive_bar
 
-num_iterations = 2 #250 # @param {type:"integer"}
+
+num_iterations = 250 # @param {type:"integer"}
 collect_episodes_per_iteration = 2 # @param {type:"integer"}
 replay_buffer_capacity = 2000 # @param {type:"integer"}
 
@@ -91,6 +93,7 @@ def main():
 	eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
 	# Agent
+	print("Agent")
 
 	actor_net = actor_distribution_network.ActorDistributionNetwork(
 		train_env.observation_spec(),
@@ -113,6 +116,7 @@ def main():
 	tf_agent.initialize()
 
 	# Policies
+	print("Policies")
 
 	eval_policy = tf_agent.policy
 	collect_policy = tf_agent.collect_policy
@@ -120,6 +124,7 @@ def main():
 	saver = PolicySaver(eval_policy, batch_size=None)
 
 	# Replay Buffer
+	print("Replay Buffer")
 
 	table_name = 'uniform_table'
 	replay_buffer_signature = tensor_spec.from_spec(
@@ -152,6 +157,7 @@ def main():
 		replay_buffer_capacity
 	)
 
+
 	# (Optional) Optimize by wrapping some of the code in a graph using TF function.
 	tf_agent.train = common.function(tf_agent.train)
 
@@ -162,32 +168,48 @@ def main():
 	avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
 	returns = [avg_return]
 
-	for _ in range(num_iterations):
+	with alive_bar(num_iterations) as bar:
+		for _ in range(num_iterations):
 
-		# Collect a few episodes using collect_policy and save to the replay buffer.
-		# collect_episode(
-		# train_py_env, tf_agent.collect_policy, collect_episodes_per_iteration)
+			# Collect a few episodes using collect_policy and save to the replay buffer.
+			# collect_e pisode(
+			# train_py_env, tf_agent.collect_policy, collect_episodes_per_iteration)
 
-		# Use data from the buffer and update the agent's network.
-		iterator = iter(replay_buffer.as_dataset(sample_batch_size=1))
-		trajectories, _ = next(iterator)
-		train_loss = tf_agent.train(experience=trajectories)  
+			# Use data from the buffer and update the agent's network.
+			print(replay_buffer.as_dataset(sample_batch_size=1))
+			iterator = iter(replay_buffer.as_dataset(sample_batch_size=1))
 
-		replay_buffer.clear()
+			exit()
 
-		step = tf_agent.train_step_counter.numpy()
+			print("-_-")
+			try:
+				trajectories, _ = next(iterator) # essa linha tá travando
+			except Exception as e:
+				print(f"{e}")
+				exit()
+			print("+_+")
 
-		if step % log_interval == 0:
-			print('step = {0}: loss = {1}'.format(step, train_loss.loss))
+			train_loss = tf_agent.train(experience=trajectories)  
 
-		if step % eval_interval == 0:
-			avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
-			print('step = {0}: Average Return = {1}'.format(step, avg_return))
-			returns.append(avg_return)
+			replay_buffer.clear()
 
-		saver.save(next_path('policy_%s'))
-	
+			step = tf_agent.train_step_counter.numpy()
+
+			if step % log_interval == 0:
+				print('step = {0}: loss = {1}'.format(step, train_loss.loss))
+
+			if step % eval_interval == 0:
+				avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+				print('step = {0}: Average Return = {1}'.format(step, avg_return))
+				returns.append(avg_return)
+
+			bar()
+
+			saver.save(next_path('policy_%s'))
+		
 	## Visualization
+	print("Visualization")
+
 	steps = range(0, num_iterations + 1, eval_interval)
 	plt.plot(steps, returns)
 	plt.ylabel('Average Return')
