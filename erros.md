@@ -8,3 +8,6 @@
 
  -> editar /home/$user/anaconda3/envs/$name/lib/python3.10/site-packages/contracts/library/miscellaneous_aliases.py 
  import collections.abc as collections
+
+
+- NotImplementedError: numpy() is only available when eager execution is enabled.

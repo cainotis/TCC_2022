@@ -5,10 +5,10 @@
 
 ### Enviroment
 - [X] Criar Env Base
-- [ ] Ver [warpers](https://www.tensorflow.org/agents/tutorials/2_environments_tutorial#environment_wrappers)
+- [X] Ver [warpers](https://www.tensorflow.org/agents/tutorials/2_environments_tutorial#environment_wrappers)
 	- talvez usar ActionDiscretizeWrapper, RunStats e TimeLimit
 
-- [ ] Colocar um TimeLimit
+- [X] Colocar um TimeLimit
 - [X] Mudar para pontuar quando for para uma tile que diferente das duas ultimas
 
 
