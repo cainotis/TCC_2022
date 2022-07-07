@@ -1,8 +1,6 @@
 from typing import Optional
 
-from .DuckievillageEnv import DuckievillageEnv
-
-from .Evaluator import Evaluator
+from .BaseEnvironment import BaseEnvironment
 
 import abc
 import tensorflow as tf
@@ -18,15 +16,13 @@ from tf_agents.trajectories import time_step as ts
 
 import cv2
 
-
 OBSERVATION_SHAPE = (60, 80, 3)
 
-class Environment(DuckievillageEnv, py_environment.PyEnvironment):
+class Environment(BaseEnvironment):
 	def __init__(self,
 				 interative: Optional[bool] = False,
 				 **kwargs):
 		super().__init__(**kwargs)
-		self.eval = Evaluator(self)
 		self._current_time_step = None
 		self._interative = interative
 		self._action_spec = array_spec.BoundedArraySpec(
@@ -89,12 +85,11 @@ class Environment(DuckievillageEnv, py_environment.PyEnvironment):
 		)
 
 	def _state(self): 
-		if hasattr(self, 'mailbox'):
-			I = cv2.resize(self.front(), (80, 60))
-			I = I.reshape(OBSERVATION_SHAPE)
-			return I
-		else:
-			np.zeros(OBSERVATION_SHAPE, dtype=np.uint8)
+		I = cv2.resize(self.front(), (80, 60))
+		I = I.reshape(OBSERVATION_SHAPE)
+		return I
+		# else:
+			# return np.zeros(OBSERVATION_SHAPE, dtype=np.uint8)
 
 	def current_time_step(self):
 		return self._current_time_step

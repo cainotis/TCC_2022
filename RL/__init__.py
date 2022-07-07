@@ -1,5 +1,6 @@
 from .Evaluator import Evaluator, \
 					   EvaluationError
+
 from .Environment import Environment
 
-import utils
+from .BaseEnvironment import BaseEnvironment

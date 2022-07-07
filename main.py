@@ -1,10 +1,10 @@
 import sys
 import pyglet
 from pyglet.window import key
-from duckievillage import create_env
 import cv2
 
-from RL import Environment, EvaluationError
+from RL import BaseEnvironment as Environment
+from RL import EvaluationError
 
 class Agent:
 	# Agent initialization
@@ -24,29 +24,30 @@ class Agent:
 		# At each step, the agent produces an action in the form of two reals in [-1,1]:
 		#   pwm_left, pwm_right = left motor power, right motor power
 		# Play with these values and figure out how to make your own remote control duckiebot!
-		pwm_left, pwm_right = 0, 0
+		vel, angle = 0, 0
 
 		base_speed = 0.8
-		base_turn_speed = base_speed/2
+		base_turn_speed = 10
 
 		if self.key_handler[key.UP] or self.key_handler[key.W]:
-			pwm_left += base_speed
-			pwm_right += base_speed
+			vel = base_speed
+
 		if self.key_handler[key.DOWN] or self.key_handler[key.S]:
-			pwm_left -= base_speed
-			pwm_right -= base_speed
+			vel = -base_speed
+
 		if self.key_handler[key.LEFT] or self.key_handler[key.A]:
-			pwm_left -= base_turn_speed
-			pwm_right += base_turn_speed
+			angle = base_turn_speed
+
 		if self.key_handler[key.RIGHT] or self.key_handler[key.D]:
-			pwm_left += base_turn_speed
-			pwm_right -= base_turn_speed
+			angle = -base_turn_speed
+
 		# At each step, the environment may (or may not) change given your actions. Function step takes
 		# as parameter the two motor powers as action and returns an observation (what the robot is
 		# currently seeing), a reward (mostly used for reinforcement learning), whether the episode is
 		# done (also used for reinforcement learning) and some info on the elapsed episode.  Let's ignore
 		# return values for now.
-		return self.env.step((pwm_left, pwm_right))
+		self.env.render()
+		return self.env.step(vel, angle)
 
 		
 
@@ -57,22 +58,16 @@ def main():
 	env = Environment(
 		
 		seed = 101,
-		# map_name = 'loop_empty',
+		map_name = 'loop_empty',
 		draw_curve = False,
 		draw_bbox = False,
 		domain_rand = False,
 		distortion = False,
 		top_down = False,
 
-		map_name = 'maps/circuit.yaml',
-		is_external_map = True,
-		
-		## testing
-		# enable_gps = True,
-		# enable_topomap = True,
+		# map_name = 'maps/circuit.yaml',
+		# is_external_map = True,
 
-
-		interative = True,
 	)
 
 	# Let's reset the environment to get our Duckiebot somewhere random.
@@ -95,8 +90,8 @@ def main():
 
 	def loop(dt: float):
 		try:
-			score = agent.send_commands(dt).reward
-			print(f"Score : {score}")
+			ret = agent.send_commands(dt)
+			print(f"Score : {ret[1]}")
 			# print(f"Tile : {env.current_tile()}")
 
 		except EvaluationError as e:

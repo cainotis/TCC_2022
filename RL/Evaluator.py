@@ -1,4 +1,3 @@
-from duckievillage import Evaluator as Base
 import math
 
 epsilon = 1e-5
@@ -8,7 +7,7 @@ class EvaluationError(Exception):
 		super().__init__(message)
 		self.errors = errors
 
-class Evaluator(Base):
+class Evaluator:
 	def __init__(self, env):
 		env.max_steps = math.inf
 		self._env = env
@@ -57,6 +56,4 @@ class Evaluator(Base):
 			self._last_tiles[0] = current_tile
 			amount += 10
 
-
 		return amount
-

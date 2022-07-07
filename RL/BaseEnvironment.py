@@ -1,61 +1,46 @@
-from duckievillage import *
+# import logging
+import math
+import random
+from ctypes import POINTER
 
-class DuckievillageEnv(gym_duckietown.envs.DuckietownNoisyEnv):
+import numpy as np
+import numpy.linalg
+import cv2
+import gym.wrappers.monitoring.video_recorder
+import gym_duckietown.objmesh
+import gym_duckietown.objects
+import gym_duckietown.simulator
+import gym_duckietown.envs
+import gym_duckietown.wrappers
+import pyglet
+from pyglet import gl, window, image
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+
+FULL_VIEW_MODE = 0
+TOP_DOWN_VIEW_MODE = 1
+FRONT_VIEW_MODE = 2
+N_VIEW_MODES = 3
+
+from .Evaluator import Evaluator
+
+class BaseEnvironment(gym_duckietown.envs.DuckietownEnv):
 	def __init__(self,
-             top_down = False,
-             cam_height = 5,
-             enable_topomap: bool = False,
-             enable_polymap: bool = False,
-             enable_roadsensor: bool = False,
-             enable_odometer: bool = False,
-             enable_lightsensor: bool = False,
-             enable_junction: bool = False,
-             enable_gps: bool = False,
-             enable_eval: bool = False,
-             enable_mailbox: bool = False,
-             mailbox_file: str = None,
-             enable_mileage: bool = False,
-             video_path: str = None,
-             **kwargs):
+			 top_down = False,
+			 cam_height = 5,
+			 video_path: str = None,
+			 **kwargs):
 		super().__init__(**kwargs)
 		self.horizon_color = self._perturb(self.color_sky)
 		self.cam_fov_y = gym_duckietown.simulator.CAMERA_FOV_Y
 		self.top_down = top_down
-		self.topo_graph = _create_topo_graph(self.grid_width, self.grid_height, self.drivable_tiles,
-										   self.road_tile_size) if enable_topomap else None
-		self.junction_graph = _create_junction_graph(self.grid_width, self.grid_height,
-												   self.drivable_tiles, self.road_tile_size, self) if enable_junction else None
-		self.gps = GPS(self) if enable_gps else None
-
-		self.mailbox = Mailbox(self, mailbox_file) if enable_mailbox else None
-		self.eval = Evaluator(self) if enable_eval else None
-		self.mileage = Mileage() if enable_mileage else None
-
-		if enable_polymap:
-			self.poly_map = PolygonMap(self)
-			for o in self.objects:
-				self.poly_map.add(o)
-		else:
-			self.poly_map = None
+	
+		self.eval = Evaluator(self)
 
 		self._view_mode = 0
 		self.top_cam_height = cam_height
 
-		self.odometer = Odometer() if enable_odometer else None
-
-		if enable_roadsensor:
-			self.road_sensor = RoadSensor(self)
-
-			self._roads = []
-			for t in self.drivable_tiles:
-				k = t['kind'].split('_', 1)[0]
-				if k == '3way' or k == '4way':
-					k = 'inter'
-				self._roads.append((t['coords'], k))
-		else: 
-			self.road_sensor = None
-
-		self.lightsensor = LightSensor(self) if enable_lightsensor else None
 		self.actions = [0, 0]
 
 		if video_path is not None:
@@ -117,7 +102,7 @@ class DuckievillageEnv(gym_duckietown.envs.DuckietownNoisyEnv):
 			self.img_array_human,
 			top_down = True,
 			segment=segment,
-			callback = (lambda: self.mailbox.render()) if self.mailbox is not None else None,
+			# callback = (lambda: self.mailbox.render()) if self.mailbox is not None else None,
 		)
 
 	def front(self, segment = False):
@@ -129,7 +114,7 @@ class DuckievillageEnv(gym_duckietown.envs.DuckietownNoisyEnv):
 			self.img_array_human,
 			top_down = False,
 			segment=segment,
-			callback = (lambda: self.mailbox.render()) if self.mailbox is not None else None,
+			# callback = (lambda: self.mailbox.render()) if self.mailbox is not None else None,
 		)
 
 	def render(self, mode: str = "human", close: bool = False, segment: bool = False, text: str = ""):
@@ -246,9 +231,6 @@ class DuckievillageEnv(gym_duckietown.envs.DuckietownNoisyEnv):
 	def step(self, pwm_left: float, pwm_right: float):
 		self.actions[0], self.actions[1] = pwm_left, pwm_right
 		obs, reward, done, info = super().step(self.actions)
-		if self.odometer is not None:
-			metrics = info['DuckietownEnv']
-			self.odometer.update(metrics['omega_l'], metrics['omega_r'], metrics['radius'])
 		return obs, reward, done, info
 
 	def pointing_direction(self) -> tuple:

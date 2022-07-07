@@ -35,8 +35,6 @@ from RL.utils import next_path
 
 import reverb
 
-from alive_progress import alive_bar
-
 # tf.compat.v1.disable_eager_execution()
 
 num_iterations = 250 # @param {type:"integer"}
@@ -61,7 +59,7 @@ def main():
 		top_down = False,
 
 		map_name = 'loop_empty',
-		is_external_map = False,
+		# is_external_map = False,
 		# interative = True,
 	)
 
@@ -74,25 +72,15 @@ def main():
 		distortion = False,
 		top_down = False,
 
-		map_name = 'maps/circuit.yaml',
-		is_external_map = True,
+		map_name = 'loop_empty',
+		# is_external_map = True,
 		
-		enable_eval = True,
+		# enable_eval = True,
 		# interative = True,
 	)
 
-
 	train_py_env.reset()
 	eval_py_env.reset()
-
-	# eval_py_env.render()
-
-	# @eval_py_env.unwrapped.window.event
-	# def on_key_press(symbol, modifiers):
-	# 	if symbol == key.ESCAPE:
-	# 		eval_py_env.close()
-	# 		sys.exit(0)
-	# 	eval_py_env.render()
 
 	# utils.validate_py_environment(train_py_env, episodes=5)
 	# utils.validate_py_environment(eval_py_env, episodes=5)
@@ -204,20 +192,20 @@ def main():
 
 			replay_buffer.clear()
 
-			# tf.compat.v1.enable_eager_execution()
-			step = tf_agent.train_step_counter.numpy()
+			# step = tf_agent.train_step_counter.numpy()
 
-			if step % log_interval == 0:
-				print('step = {0}: loss = {1}'.format(step, train_loss.loss))
+			# if step % log_interval == 0:
+			# 	print('step = {0}: loss = {1}'.format(step, train_loss.loss))
 
-			if step % eval_interval == 0:
-				avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
-				print('step = {0}: Average Return = {1}'.format(step, avg_return))
-				returns.append(avg_return)
+			# if step % eval_interval == 0:
+			# 	avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+			# 	print('step = {0}: Average Return = {1}'.format(step, avg_return))
+			# 	returns.append(avg_return)
 
-			saver.save(next_path('policy_%s'))
 	
 	teste()
+	
+	saver.save(next_path('policy_%s'))
 		
 	## Visualization
 	print("Visualization")
