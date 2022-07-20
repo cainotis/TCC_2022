@@ -15,38 +15,14 @@ class Evaluator:
 		self._score = 0
 		self.total_score = 0
 
-		self._last_tiles = [self._env.current_tile()] * 2
+	def reward(self, simulator_return) -> float:
+		
+		self._score = simulator_return[1]
 
-	def infraction(self, t: str, penalty: float, warning: str):
-		print(warning)
-		if t not in self._log: self._log[t] = []
-		self._log[t].append((penalty, warning))
-		raise EvaluationError(warning)
+		bonus = self.bonus()
+		self.total_score += self._score + bonus
+		return (self._score + bonus)
 
-	def track(self):
-		r = self._env.penalization(self._env.cur_pos, self._env.cur_angle)
-		if r is None: return
-		if r == "out":
-			self.infraction(r, -1, "Mailduck has gone off-road!")
-		if r == "crash":
-			self.infraction(r, -1, "Mailduck has crashed into something!")
-
-	def reward(self) -> float:
-		try:
-			self.track()
-			self._score = (self._env.speed + self._score) / 2
-			if self._score < epsilon:
-				self._score = 0
-
-		except EvaluationError as e:
-			self._score = -1
-			return self._score
-
-		finally:
-			bonus = self.bonus()
-			self.total_score += self._score + bonus
-			return (self._score + bonus)
-	
 	def bonus(self) -> float:
 		amount = 0
 

@@ -70,9 +70,9 @@ class Environment(BaseEnvironment):
 		if self._interative:
 			self.render()
 
-		reward = self.eval.reward()
+		reward = self.eval.reward(ret)
 
-		if reward == -1:
+		if reward == -1000:
 			return ts.termination(
 				self._state(),
 				self.eval.total_score

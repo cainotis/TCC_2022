@@ -90,8 +90,12 @@ def main():
 
 	def loop(dt: float):
 		try:
+
 			ret = agent.send_commands(dt)
-			print(f"Score : {ret[1]}")
+			# print(f"Score : {ret[1]}")
+
+			print(f"Position: {env.cur_pos}")
+			print(f"Angle: {env.cur_angle}")
 			# print(f"Tile : {env.current_tile()}")
 
 		except EvaluationError as e:
