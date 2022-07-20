@@ -1,11 +1,11 @@
 import sys
 import pyglet
 from pyglet.window import key
-
 import matplotlib.pyplot as plt
 
-import tensorflow as tf
+import reverb
 
+import tensorflow as tf
 from tf_agents.agents.reinforce import reinforce_agent
 
 from tf_agents.drivers import py_driver
@@ -30,10 +30,8 @@ from tf_agents.utils import common
 
 
 from RL import Environment, EvaluationError
-
 from RL.utils import next_path
 
-import reverb
 
 # tf.compat.v1.disable_eager_execution()
 
@@ -62,7 +60,7 @@ def main():
 		# is_external_map = False,
 		# interative = True,
 	)
-	
+
 	eval_py_env = Environment(
 		seed = 101,
 		draw_curve = False,
@@ -74,8 +72,6 @@ def main():
 		map_name = 'loop_empty',
 	)
 
-	train_py_env.reset()
-	eval_py_env.reset()
 
 	# utils.validate_py_environment(train_py_env, episodes=5)
 	# utils.validate_py_environment(eval_py_env, episodes=5)
