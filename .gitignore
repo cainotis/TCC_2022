@@ -143,3 +143,6 @@ dmypy.json
 
 # Videos
 *.mp4
+
+# logs
+logs/*

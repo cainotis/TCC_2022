@@ -2,6 +2,24 @@
 
 from __future__ import absolute_import, division, print_function
 
+import logging
+from logging.handlers import RotatingFileHandler
+
+file_handler = RotatingFileHandler("logs/tcc.log", maxBytes=1000000, backupCount=5)
+file_handler.setLevel(logging.DEBUG)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+
+logging.basicConfig(
+	handlers=[
+		file_handler, stream_handler
+	],
+	format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+	datefmt='%H:%M:%S',
+	level=logging.DEBUG
+)
+
 import base64
 import imageio
 import matplotlib
@@ -134,7 +152,7 @@ eval_policy = agent.policy
 collect_policy = agent.collect_policy
 
 
-random_policy = random_tf_policy.RandomTFPolicy(
+initial_policy = random_tf_policy.RandomTFPolicy(
 	train_env.time_step_spec(),
 	train_env.action_spec()
 )
@@ -154,8 +172,7 @@ example_environment = tf_py_environment.TFPyEnvironment(example_environment)
 
 time_step = example_environment.reset()
 
-random_policy.action(time_step)
-
+initial_policy.action(time_step)
 
 def compute_avg_return(environment, policy, num_episodes=10):
 
@@ -178,7 +195,7 @@ def compute_avg_return(environment, policy, num_episodes=10):
 # See also the metrics module for standard implementations of different metrics.
 # https://github.com/tensorflow/agents/tree/master/tf_agents/metrics
 
-compute_avg_return(eval_env, random_policy, num_eval_episodes)
+compute_avg_return(eval_env, initial_policy, num_eval_episodes)
 
 
 table_name = 'uniform_table'
@@ -211,7 +228,7 @@ rb_observer = reverb_utils.ReverbAddTrajectoryObserver(
 py_driver.PyDriver(
 		env,
 		py_tf_eager_policy.PyTFEagerPolicy(
-			random_policy, use_tf_function=True),
+			initial_policy, use_tf_function=True),
 		[rb_observer],
 		max_steps=initial_collect_steps).run(train_py_env.reset())
 
