@@ -62,9 +62,8 @@ def main():
 		# is_external_map = False,
 		# interative = True,
 	)
-
+	
 	eval_py_env = Environment(
-		
 		seed = 101,
 		draw_curve = False,
 		draw_bbox = False,
@@ -73,10 +72,6 @@ def main():
 		top_down = False,
 
 		map_name = 'loop_empty',
-		# is_external_map = True,
-		
-		# enable_eval = True,
-		# interative = True,
 	)
 
 	train_py_env.reset()
@@ -167,7 +162,7 @@ def main():
 	avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
 	returns = [avg_return]
 
-	@tf.function
+	# @tf.function
 	def teste():
 		for _ in range(num_iterations):
 
@@ -192,15 +187,15 @@ def main():
 
 			replay_buffer.clear()
 
-			# step = tf_agent.train_step_counter.numpy()
+			step = tf_agent.train_step_counter.numpy()
 
-			# if step % log_interval == 0:
-			# 	print('step = {0}: loss = {1}'.format(step, train_loss.loss))
+			if step % log_interval == 0:
+				print('step = {0}: loss = {1}'.format(step, train_loss.loss))
 
-			# if step % eval_interval == 0:
-			# 	avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
-			# 	print('step = {0}: Average Return = {1}'.format(step, avg_return))
-			# 	returns.append(avg_return)
+			if step % eval_interval == 0:
+				avg_return = compute_avg_return(eval_env, tf_agent.policy, num_eval_episodes)
+				print('step = {0}: Average Return = {1}'.format(step, avg_return))
+				returns.append(avg_return)
 
 	
 	teste()

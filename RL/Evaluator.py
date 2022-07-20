@@ -15,6 +15,8 @@ class Evaluator:
 		self._score = 0
 		self.total_score = 0
 
+		self._last_tiles = [self._env.current_tile()] * 2
+
 	def reward(self, simulator_return) -> float:
 		
 		self._score = simulator_return[1]

@@ -16,9 +16,9 @@ from tf_agents.trajectories import time_step as ts
 
 import cv2
 
-OBSERVATION_SHAPE = (60, 80, 3)
+OBSERVATION_SHAPE = (3, )
 
-class Environment(BaseEnvironment):
+class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def __init__(self,
 				 interative: Optional[bool] = False,
 				 **kwargs):
@@ -34,14 +34,13 @@ class Environment(BaseEnvironment):
 		)
 		self._observation_spec = array_spec.BoundedArraySpec(
 			shape=OBSERVATION_SHAPE,
-			dtype=np.uint8,
-			minimum=0,
-			maximum=255,
+			dtype=np.float16,
+			minimum=[0, 0, -np.pi],
+			maximum=[4, 4, np.pi],
 			name='observation'
 		)
 
 		self._episode_ended = False
-
 
 		self._action2pwm = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
 
@@ -84,12 +83,10 @@ class Environment(BaseEnvironment):
 			discount=0
 		)
 
-	def _state(self): 
-		I = cv2.resize(self.front(), (80, 60))
-		I = I.reshape(OBSERVATION_SHAPE)
-		return I
-		# else:
-			# return np.zeros(OBSERVATION_SHAPE, dtype=np.uint8)
+	def _state(self):
+		x, y, z = self.cur_pos
+		angle = self.cur_angle
+		return np.float16([x, z, angle])
 
 	def current_time_step(self):
 		return self._current_time_step
