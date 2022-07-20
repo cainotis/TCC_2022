@@ -26,23 +26,27 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 		self._current_time_step = None
 		self._interative = interative
 		self._action_spec = array_spec.BoundedArraySpec(
-			shape=(2,),
+			shape=(),
 			dtype=np.int64,
 			minimum=0,
-			maximum=8,
+			maximum=8*8,
 			name='action'
 		)
 		self._observation_spec = array_spec.BoundedArraySpec(
 			shape=OBSERVATION_SHAPE,
 			dtype=np.float16,
-			minimum=[0, 0, -np.pi],
-			maximum=[4, 4, np.pi],
+			minimum=[0, 0, -np.pi*2],
+			maximum=[4, 4, np.pi*2],
 			name='observation'
 		)
 
 		self._episode_ended = False
 
-		self._action2pwm = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
+		# self._action2pwm = np.array([-1, -.75, -.5, -.25, 0, .25, .5, .75, 1])
+		
+		aux = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
+		self._action2pwm = [(x, y) for x in aux for y in aux]
+
 
 	def _reset(self):
 		"""Return initial_time_step."""
@@ -59,9 +63,10 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 			# a new episode.
 			return self.reset()
 
-		pwm_left = self._action2pwm[action[0]]
-
-		pwm_right = self._action2pwm[action[1]]
+		pwm_left, pwm_right = self._action2pwm[action]
+		
+		# pwm_left = self._action2pwm[action[0]]
+		# pwm_right = self._action2pwm[action[1]]
 
 		ret = super().step(pwm_left=pwm_left, pwm_right=pwm_right)
 		
