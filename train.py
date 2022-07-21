@@ -308,8 +308,8 @@ while datetime.now() < time2stop:
 		returns.append(avg_return)
 		saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
 		train_checkpointer.save(step)
-		print(f"now: {datetime.now().strftime("%Y/%m/%d, %H:%M:%S")}")
-		print(f"stop time : {time2stop.strftime("%Y/%m/%d, %H:%M:%S")}")
+		print(f"now: {datetime.now().strftime('%Y/%m/%d, %H:%M:%S')}")
+		print(f"stop time : {time2stop.strftime('%Y/%m/%d, %H:%M:%S')}")
 
 step = agent.train_step_counter.numpy()
 saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
