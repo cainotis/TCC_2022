@@ -149,3 +149,4 @@ logs/*
 
 # policies
 policies/*
+checkpoint/*

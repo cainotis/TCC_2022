@@ -20,6 +20,8 @@ logging.basicConfig(
 	level=logging.DEBUG
 )
 
+
+import time
 import base64
 import imageio
 import matplotlib
@@ -50,7 +52,7 @@ from tf_agents.environments import TimeLimit
 from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 
-num_iterations = 20000 # @param {type:"integer"}
+num_iterations = 20000 # @param {type:"integer"} 
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration =   1# @param {type:"integer"}
@@ -270,6 +272,19 @@ collect_driver = py_driver.PyDriver(
 my_policy = agent.collect_policy
 saver = PolicySaver(my_policy, batch_size=None)
 
+## Checkpoiter
+global_step = tf.Variable(agent.train_step_counter.numpy(), name="step")
+train_checkpointer = common.Checkpointer(
+    ckpt_dir='checkpoint',
+    max_to_keep=10,
+    agent=agent,
+    policy=agent.policy,
+    replay_buffer=replay_buffer,
+    global_step=global_step
+)
+train_checkpointer.initialize_or_restore()
+global_step = tf.compat.v1.train.get_global_step()
+
 for _ in range(num_iterations):
 
 	# Collect a few steps and save to the replay buffer.
@@ -288,8 +303,8 @@ for _ in range(num_iterations):
 		avg_return = compute_avg_return(eval_env, agent.policy, num_eval_episodes)
 		print('step = {0}: Average Return = {1}'.format(step, avg_return))
 		returns.append(avg_return)
-		saver.save('policies/policy_%d' % step)
-
+		saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
+		train_checkpointer.save(agent.train_step_counter.numpy())
 
 
 iterations = range(0, num_iterations + 1, eval_interval)
