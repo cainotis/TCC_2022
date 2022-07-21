@@ -9,7 +9,7 @@ file_handler = RotatingFileHandler("logs/tcc.log", maxBytes=1000000, backupCount
 file_handler.setLevel(logging.DEBUG)
 
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+stream_handler.setLevel(logging.WARN)
 
 logging.basicConfig(
 	handlers=[
@@ -50,9 +50,12 @@ from tf_agents.utils import common
 from tf_agents.environments import utils
 from tf_agents.environments import TimeLimit
 from tf_agents.policies import PolicySaver
+
 from RL import Environment, EvaluationError
 
-num_iterations = 20000 # @param {type:"integer"} 
+
+num_iterations = 20000 # @param {type:"integer"}
+num_iterations *= 2
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration =   1# @param {type:"integer"}
@@ -103,8 +106,8 @@ eval_py_env = Environment(
 )
 
 
-train_py_env = TimeLimit(env=train_py_env, duration = 1000)
-eval_py_env = TimeLimit(env=eval_py_env, duration = 1000)
+train_py_env = TimeLimit(env=train_py_env, duration = 2000)
+eval_py_env = TimeLimit(env=eval_py_env, duration = 2000)
 
 
 train_env = tf_py_environment.TFPyEnvironment(train_py_env)
@@ -285,7 +288,7 @@ train_checkpointer = common.Checkpointer(
 train_checkpointer.initialize_or_restore()
 global_step = tf.compat.v1.train.get_global_step()
 
-for _ in range(num_iterations):
+for n in range(num_iterations):
 
 	# Collect a few steps and save to the replay buffer.
 	time_step, _ = collect_driver.run(time_step)
@@ -294,7 +297,7 @@ for _ in range(num_iterations):
 	experience, unused_info = next(iterator)
 	train_loss = agent.train(experience).loss
 
-	step = agent.train_step_counter.numpy()
+	step = agent.train_step_counter.numpy()	
 
 	if step % log_interval == 0:
 		print('step = {0}: loss = {1}'.format(step, train_loss))
@@ -305,7 +308,7 @@ for _ in range(num_iterations):
 		returns.append(avg_return)
 		saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
 		train_checkpointer.save(agent.train_step_counter.numpy())
-
+		print(f"n: {n}/{num_iterations}")
 
 iterations = range(0, num_iterations + 1, eval_interval)
 plt.plot(iterations, returns)

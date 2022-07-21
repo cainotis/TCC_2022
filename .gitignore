@@ -150,3 +150,6 @@ logs/*
 # policies
 policies/*
 checkpoint/*
+
+# old
+*_old

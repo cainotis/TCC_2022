@@ -1,6 +1,7 @@
 import math
 
 epsilon = 1e-5
+INFRACTION_FLAG = -1000
 
 class EvaluationError(Exception):
 	def __init__(self, message, errors = None):
@@ -18,8 +19,13 @@ class Evaluator:
 		self._last_tiles = [self._env.current_tile()] * 2
 
 	def reward(self, simulator_return) -> float:
-		
-		self._score = simulator_return[1]
+		score = simulator_return[1]
+
+		if (score == INFRACTION_FLAG):
+			return INFRACTION_FLAG
+
+
+		self._score = -score
 
 		bonus = self.bonus()
 		self.total_score += self._score + bonus
@@ -34,4 +40,4 @@ class Evaluator:
 			self._last_tiles[0] = current_tile
 			amount += 10
 
-		return amount
+		return -amount
