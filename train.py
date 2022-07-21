@@ -52,13 +52,13 @@ from tf_agents.environments import TimeLimit
 from tf_agents.policies import PolicySaver
 
 from RL import Environment, EvaluationError
+from datetime import datetime
 
-
-num_iterations = 20000 # @param {type:"integer"}
-num_iterations *= 2
+# num_iterations = 20000 # @param {type:"integer"}
+time2stop = datetime(2022, 7, 21, 22, 0, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
-collect_steps_per_iteration =   1# @param {type:"integer"}
+collect_steps_per_iteration =   1 # @param {type:"integer"}
 replay_buffer_max_length = 100000  # @param {type:"integer"}
 
 batch_size = 64  # @param {type:"integer"}
@@ -288,7 +288,7 @@ train_checkpointer = common.Checkpointer(
 train_checkpointer.initialize_or_restore()
 global_step = tf.compat.v1.train.get_global_step()
 
-for n in range(num_iterations):
+while datetime.now() < time2stop:
 
 	# Collect a few steps and save to the replay buffer.
 	time_step, _ = collect_driver.run(time_step)
@@ -307,8 +307,13 @@ for n in range(num_iterations):
 		print('step = {0}: Average Return = {1}'.format(step, avg_return))
 		returns.append(avg_return)
 		saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
-		train_checkpointer.save(agent.train_step_counter.numpy())
-		print(f"n: {n}/{num_iterations}")
+		train_checkpointer.save(step)
+		print(f"now: {datetime.now().strftime("%Y/%m/%d, %H:%M:%S")}")
+		print(f"stop time : {time2stop.strftime("%Y/%m/%d, %H:%M:%S")}")
+
+step = agent.train_step_counter.numpy()
+saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
+train_checkpointer.save(step)
 
 iterations = range(0, num_iterations + 1, eval_interval)
 plt.plot(iterations, returns)
