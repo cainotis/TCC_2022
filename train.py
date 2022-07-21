@@ -47,6 +47,7 @@ from tf_agents.utils import common
 
 from tf_agents.environments import utils
 from tf_agents.environments import TimeLimit
+from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 
 num_iterations = 20000 # @param {type:"integer"}
@@ -265,6 +266,10 @@ collect_driver = py_driver.PyDriver(
 		[rb_observer],
 		max_steps=collect_steps_per_iteration)
 
+## PolicySaver
+my_policy = agent.collect_policy
+saver = PolicySaver(my_policy, batch_size=None)
+
 for _ in range(num_iterations):
 
 	# Collect a few steps and save to the replay buffer.
@@ -283,6 +288,7 @@ for _ in range(num_iterations):
 		avg_return = compute_avg_return(eval_env, agent.policy, num_eval_episodes)
 		print('step = {0}: Average Return = {1}'.format(step, avg_return))
 		returns.append(avg_return)
+		saver.save('policies/policy_%d' % step)
 
 
 
