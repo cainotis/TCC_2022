@@ -19,13 +19,15 @@ class Evaluator:
 		self._last_tiles = [self._env.current_tile()] * 2
 
 	def reward(self, simulator_return) -> float:
-		score = simulator_return[1]
+		simulator_score = simulator_return[1]
 
-		if (score == INFRACTION_FLAG):
-			return INFRACTION_FLAG
+		if simulator_score == -1000:
+			raise EvaluationError("")
 
+		self._score = simulator_score
 
-		self._score = -score
+		if self._score < epsilon:
+			self._score = 0
 
 		bonus = self.bonus()
 		self.total_score += self._score + bonus
@@ -40,4 +42,6 @@ class Evaluator:
 			self._last_tiles[0] = current_tile
 			amount += 10
 
-		return -amount
+		amount += self._env.speed/2
+
+		return amount

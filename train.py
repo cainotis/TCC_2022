@@ -54,11 +54,10 @@ from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 from datetime import datetime
 
-# num_iterations = 20000 # @param {type:"integer"}
 time2stop = datetime(2022, 7, 22, 19, 0, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
-collect_steps_per_iteration =   1 # @param {type:"integer"}
+collect_steps_per_iteration = 1 # @param {type:"integer"}
 replay_buffer_max_length = 100000  # @param {type:"integer"}
 
 batch_size = 64  # @param {type:"integer"}
@@ -80,8 +79,6 @@ env = Environment(
 )
 env = TimeLimit(env=env, duration = 1000)
 env.reset()
-env.render()
-
 
 train_py_env = Environment(
 	seed = 101,
@@ -105,10 +102,8 @@ eval_py_env = Environment(
 	map_name = 'loop_empty',
 )
 
-
 train_py_env = TimeLimit(env=train_py_env, duration = 2000)
 eval_py_env = TimeLimit(env=eval_py_env, duration = 2000)
-
 
 train_env = tf_py_environment.TFPyEnvironment(train_py_env)
 eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
@@ -287,7 +282,9 @@ train_checkpointer = common.Checkpointer(
 )
 train_checkpointer.initialize_or_restore()
 global_step = tf.compat.v1.train.get_global_step()
-num_iterations = 0 
+
+num_iterations = 0
+
 while datetime.now() < time2stop:
 	num_iterations += 1
 	# Collect a few steps and save to the replay buffer.
