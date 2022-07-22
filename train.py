@@ -55,7 +55,7 @@ from RL import Environment, EvaluationError
 from datetime import datetime
 
 # num_iterations = 20000 # @param {type:"integer"}
-time2stop = datetime(2022, 7, 21, 22, 0, 0, 0)
+time2stop = datetime(2022, 7, 22, 19, 0, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration =   1 # @param {type:"integer"}
@@ -287,9 +287,9 @@ train_checkpointer = common.Checkpointer(
 )
 train_checkpointer.initialize_or_restore()
 global_step = tf.compat.v1.train.get_global_step()
-
+num_iterations = 0 
 while datetime.now() < time2stop:
-
+	num_iterations += 1
 	# Collect a few steps and save to the replay buffer.
 	time_step, _ = collect_driver.run(time_step)
 
