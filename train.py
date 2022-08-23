@@ -54,7 +54,7 @@ from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 from datetime import datetime
 
-time2stop = datetime(2022, 7, 22, 19, 0, 0, 0)
+time2stop = datetime(2022, 8, 23, 10, 30, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration = 1 # @param {type:"integer"}
@@ -305,7 +305,7 @@ while datetime.now() < time2stop:
 		returns.append(avg_return)
 		saver.save(f'policies/policy_{time.strftime("%Y%m%d-%H%M%S")}_{step}')
 		train_checkpointer.save(step)
-		print(f"now: {datetime.now().strftime('%Y/%m/%d, %H:%M:%S')}")
+		# print(f"now: {datetime.now().strftime('%Y/%m/%d, %H:%M:%S')}")
 		print(f"stop time : {time2stop.strftime('%Y/%m/%d, %H:%M:%S')}")
 
 step = agent.train_step_counter.numpy()

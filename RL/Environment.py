@@ -17,7 +17,7 @@ from tf_agents.trajectories import time_step as ts
 
 import cv2
 
-OBSERVATION_SHAPE = (3, )
+OBSERVATION_SHAPE = (4, )
 
 class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def __init__(self,
@@ -82,14 +82,14 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 
 		self._observation_spec = array_spec.BoundedArraySpec(
 			shape=OBSERVATION_SHAPE,
-			dtype=np.int32,
-			minimum=[0, 0, 0],
-			maximum=[4000, 4000, np.int32(np.pi*2000)],
+			dtype=np.float64,
+			minimum=[-1, -1, -180, -np.pi],
+			maximum=[1, 1, 180, np.pi],
 			name='observation'
 		)
 
 		self._episode_ended = False
-
+		self._last_step
 
 	def _reset(self):
 		"""Return initial_time_step."""
@@ -129,9 +129,13 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 		)
 
 	def _state(self):
-		x, y, z = self.cur_pos
-		angle = self.cur_angle + np.pi*2
-		return np.int32([x*1000, z*1000, angle])
+		try :
+			aux = self.get_lane_pos2(self.cur_pos, self.cur_angle)
+			ret = np.float64([aux.dist, aux.dot_dir, aux.angle_deg, aux.angle_rad])
+			self._last_step = ret
+		except:
+			ret = self._last_step
+		return ret
 
 	def current_time_step(self):
 		return self._current_time_step

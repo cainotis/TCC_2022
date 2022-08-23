@@ -24,7 +24,8 @@ class Evaluator:
 		if simulator_score == -1000:
 			raise EvaluationError("")
 
-		self._score = simulator_score
+		# self._score = simulator_score
+		self._score = 0
 
 		if self._score < epsilon:
 			self._score = 0
@@ -42,6 +43,6 @@ class Evaluator:
 			self._last_tiles[0] = current_tile
 			amount += 10
 
-		amount += self._env.speed/2
+		# amount += self._env.speed/2
 
 		return amount

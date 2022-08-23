@@ -41,6 +41,9 @@ class Agent:
 		if self.key_handler[key.RIGHT] or self.key_handler[key.D]:
 			angle = -base_turn_speed
 
+		if self.key_handler[key.SPACE]:
+			vel, angle = 0, 0
+
 		# At each step, the environment may (or may not) change given your actions. Function step takes
 		# as parameter the two motor powers as action and returns an observation (what the robot is
 		# currently seeing), a reward (mostly used for reinforcement learning), whether the episode is
@@ -88,6 +91,8 @@ def main():
 	agent = Agent(env)
 	track_dt = 0
 
+	bound = [dict(dist=0, dot_dir=0, angle_deg=0, angle_rad=0), dict(dist=0, dot_dir=0, angle_deg=0, angle_rad=0)]
+
 	def loop(dt: float):
 		try:
 
@@ -96,6 +101,25 @@ def main():
 
 			print(f"Position: {env.cur_pos}")
 			print(f"Angle: {env.cur_angle}")
+
+			try:
+				aux = env.get_lane_pos2(env.cur_pos, env.cur_angle)
+				print(f"{env.get_lane_pos2(env.cur_pos, env.cur_angle)}")
+				
+				bound[0]["dist"] = min(bound[0]["dist"], aux.dist)
+				bound[0]["dot_dir"] = min(bound[0]["dot_dir"], aux.dot_dir)
+				bound[0]["angle_deg"] = min(bound[0]["angle_deg"], aux.angle_deg)
+				bound[0]["angle_rad"] = min(bound[0]["angle_rad"], aux.angle_rad)
+				print(f"{bound[0]}")
+
+				bound[1]["dist"] = max(bound[1]["dist"], aux.dist)
+				bound[1]["dot_dir"] = max(bound[1]["dot_dir"], aux.dot_dir)
+				bound[1]["angle_deg"] = max(bound[1]["angle_deg"], aux.angle_deg)
+				bound[1]["angle_rad"] = max(bound[1]["angle_rad"], aux.angle_rad)
+
+				print(f"{bound[1]}")
+			except:
+				print("ERRO")
 			# print(f"Tile : {env.current_tile()}")
 
 		except EvaluationError as e:
