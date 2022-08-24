@@ -228,8 +228,8 @@ class BaseEnvironment(gym_duckietown.envs.DuckietownEnv):
 		if force:
 			self.force_reset(segment)
 
-	def step(self, pwm_left: float, pwm_right: float):
-		self.actions[0], self.actions[1] = pwm_left, pwm_right
+	def step(self, vel: float, angle: float):
+		self.actions[0], self.actions[1] = vel, angle
 		obs, reward, done, info = super().step(self.actions)
 		return obs, reward, done, info
 

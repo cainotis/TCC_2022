@@ -28,55 +28,44 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 		self._current_time_step = None
 		self._interative = interative
 
-		self._action2pwm = [
-			(-1, 1),
-			(-.75, 1),
-			(-.5, 1),
-			(-.5, .75),
-			(-.25, 1),
-			(-.25, .75),
-			(-.25, .5),
-			(0, 1),
-			(0, .75),
-			(0, .5),
-			(0, .25),
-			(.25, 1),
-			(.25, .75),
-			(.25, .5),
-			(.25, .25),
-			(.25, 0),
-			(.5, 1),
-			(.5, .75),
-			(.5, .5),
-			(.5, .25),
-			(.5, 0),
-			(.5, -.25),
-			(.75, 1),
-			(.75, .75),
-			(.75, .5),
-			(.75, .25),
-			(.75, 0),
-			(.75, -.25),
-			(.75, -.5),
-			(1, 1),
-			(1, .75),
-			(1, .5),
-			(1, .25),
+		self._action2move = [
+			(0, -20),
+			(0, -10),
+			(0, 0),
+			(0, 10),
+			(0, 20),
+
+			(0.25, -20),
+			(0.25, -10),
+			(0.25, 0),
+			(0.25, 10),
+			(0.25, 20),
+
+			(0.5, -20),
+			(0.5, -10),
+			(0.5, 0),
+			(0.5, 10),
+			(0.5, 20),
+
+			(0.75, -20),
+			(0.75, -10),
+			(0.75, 0),
+			(0.75, 10),
+			(0.75, 20),
+
+			(1, -20),
+			(1, -10),
 			(1, 0),
-			(1, -.25),
-			(1, -.5),
-			(1, -.75),
-			(1, -1),
+			(1, 10),
+			(1, 20),
+
 		]
 		
-		# aux = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
-		# self._action2pwm = [(x, y) for x in aux for y in aux]
-
 		self._action_spec = array_spec.BoundedArraySpec(
 			shape=(),
 			dtype=np.int32,
 			minimum=0,
-			maximum=len(self._action2pwm)-1,
+			maximum=len(self._action2move)-1,
 			name='action'
 		)
 
@@ -106,9 +95,9 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 			# a new episode.
 			return self.reset()
 
-		pwm_left, pwm_right = self._action2pwm[action]
+		vel, angle = self._action2move[action]
 
-		ret = super().step(pwm_left=pwm_left, pwm_right=pwm_right)
+		ret = super().step(vel=vel, angle=angle)
 		
 		# Refresh at every update.
 		if self._interative:

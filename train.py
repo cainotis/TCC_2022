@@ -54,7 +54,7 @@ from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 from datetime import datetime
 
-time2stop = datetime(2022, 8, 23, 10, 30, 0, 0)
+time2stop = datetime(2022, 8, 24, 17, 0, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration = 1 # @param {type:"integer"}
