@@ -72,8 +72,8 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 		self._observation_spec = array_spec.BoundedArraySpec(
 			shape=OBSERVATION_SHAPE,
 			dtype=np.float64,
-			minimum=[-1, -1, -180, -np.pi],
-			maximum=[1, 1, 180, np.pi],
+			minimum=[-1, -1, -90],
+			maximum=[1, 1, 90],
 			name='observation'
 		)
 
@@ -120,7 +120,7 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def _state(self):
 		try :
 			aux = self.get_lane_pos2(self.cur_pos, self.cur_angle)
-			ret = np.float64([aux.dist, aux.dot_dir, aux.angle_deg, aux.angle_rad])
+			ret = np.float64([aux.dist, aux.dot_dir, aux.angle_deg])
 			self._last_step = ret
 		except:
 			ret = self._last_step

@@ -54,7 +54,7 @@ from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 from datetime import datetime
 
-time2stop = datetime(2022, 8, 24, 17, 0, 0, 0)
+time2stop = datetime(2022, 8, 30, 23, 17, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration = 1 # @param {type:"integer"}
@@ -108,7 +108,7 @@ eval_py_env = TimeLimit(env=eval_py_env, duration = 2000)
 train_env = tf_py_environment.TFPyEnvironment(train_py_env)
 eval_env = tf_py_environment.TFPyEnvironment(eval_py_env)
 
-fc_layer_params = (100, 50)
+fc_layer_params = (100, 75, 50)
 action_tensor_spec = tensor_spec.from_spec(env.action_spec())
 num_actions = action_tensor_spec.maximum - action_tensor_spec.minimum + 1
 

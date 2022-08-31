@@ -97,29 +97,30 @@ def main():
 		try:
 
 			ret = agent.send_commands(dt)
+			# print(f"ret : {ret}")
 			# print(f"Score : {ret[1]}")
 
 			# print(f"Position: {env.cur_pos}")
 			# print(f"Angle: {env.cur_angle}")
 
-			# try:
-			# 	aux = env.get_lane_pos2(env.cur_pos, env.cur_angle)
-			# 	print(f"{env.get_lane_pos2(env.cur_pos, env.cur_angle)}")
+			try:
+				aux = env.get_lane_pos2(env.cur_pos, env.cur_angle)
+				print(f"{env.get_lane_pos2(env.cur_pos, env.cur_angle)}")
 				
-			# 	bound[0]["dist"] = min(bound[0]["dist"], aux.dist)
-			# 	bound[0]["dot_dir"] = min(bound[0]["dot_dir"], aux.dot_dir)
-			# 	bound[0]["angle_deg"] = min(bound[0]["angle_deg"], aux.angle_deg)
-			# 	bound[0]["angle_rad"] = min(bound[0]["angle_rad"], aux.angle_rad)
-			# 	print(f"{bound[0]}")
+				bound[0]["dist"] = min(bound[0]["dist"], aux.dist)
+				bound[0]["dot_dir"] = min(bound[0]["dot_dir"], aux.dot_dir)
+				bound[0]["angle_deg"] = min(bound[0]["angle_deg"], aux.angle_deg)
+				bound[0]["angle_rad"] = min(bound[0]["angle_rad"], aux.angle_rad)
+				print(f"{bound[0]}")
 
-			# 	bound[1]["dist"] = max(bound[1]["dist"], aux.dist)
-			# 	bound[1]["dot_dir"] = max(bound[1]["dot_dir"], aux.dot_dir)
-			# 	bound[1]["angle_deg"] = max(bound[1]["angle_deg"], aux.angle_deg)
-			# 	bound[1]["angle_rad"] = max(bound[1]["angle_rad"], aux.angle_rad)
+				bound[1]["dist"] = max(bound[1]["dist"], aux.dist)
+				bound[1]["dot_dir"] = max(bound[1]["dot_dir"], aux.dot_dir)
+				bound[1]["angle_deg"] = max(bound[1]["angle_deg"], aux.angle_deg)
+				bound[1]["angle_rad"] = max(bound[1]["angle_rad"], aux.angle_rad)
 
-			# 	print(f"{bound[1]}")
-			# except:
-			# 	print("ERRO")
+				print(f"{bound[1]}")
+			except:
+				print("ERRO")
 			# print(f"Tile : {env.current_tile()}")
 
 		except EvaluationError as e:

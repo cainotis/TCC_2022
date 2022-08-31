@@ -20,29 +20,46 @@ class Evaluator:
 
 	def reward(self, simulator_return) -> float:
 		simulator_score = simulator_return[1]
+		action = simulator_return[3]["Simulator"]["action"]
 
 		if simulator_score == -1000:
 			raise EvaluationError("")
 
-		self._score = simulator_score
+		self._score = simulator_score * 0.8
 		self._score = 0
 
 		if self._score < epsilon:
 			self._score = 0
 
-		bonus = self.bonus()
+		bonus = self.bonus(action)
 		self.total_score += self._score + bonus
 		return (self._score + bonus)
 
-	def bonus(self) -> float:
+	def bonus(self, action=None) -> float:
 		amount = 0
 
 		current_tile = self._env.current_tile()
 		if not (current_tile in self._last_tiles):
 			self._last_tiles[1] = self._last_tiles[0]
 			self._last_tiles[0] = current_tile
-			amount += 100000
+			amount += 1e7
 
-		# amount += self._env.speed/2
+		try:
+			angle = self._env.get_lane_pos2(self._env.cur_pos, self._env.cur_angle).angle_deg
+
+			if (abs(angle) > 45):
+				amount -= 2 * 1e3
+		except:
+			pass
+
+		if action is not None:
+			amount += self._actionBonus(action)
+
+		amount += self._env.speed / 10
 
 		return amount
+
+	def _actionBonus(self, action) -> float:
+		angle = abs(action[1])
+		amount = -angle/10
+		return amount * 2
