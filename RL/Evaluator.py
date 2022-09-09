@@ -25,8 +25,11 @@ class Evaluator:
 		if simulator_score == -1000:
 			raise EvaluationError("")
 
-		self._score = simulator_score * 0.8
-		self._score = 0
+		if simulator_score > 0:
+			self._score = simulator_score / 10
+		else :
+			self._score = simulator_score
+
 
 		if self._score < epsilon:
 			self._score = 0
@@ -42,13 +45,13 @@ class Evaluator:
 		if not (current_tile in self._last_tiles):
 			self._last_tiles[1] = self._last_tiles[0]
 			self._last_tiles[0] = current_tile
-			amount += 1e7
+			amount += 1e6
 
 		try:
 			angle = self._env.get_lane_pos2(self._env.cur_pos, self._env.cur_angle).angle_deg
 
 			if (abs(angle) > 45):
-				amount -= 2 * 1e3
+				amount -= 1e5
 		except:
 			pass
 
@@ -61,5 +64,5 @@ class Evaluator:
 
 	def _actionBonus(self, action) -> float:
 		angle = abs(action[1])
-		amount = -angle/10
-		return amount * 2
+		amount = -angle
+		return amount

@@ -17,7 +17,7 @@ from tf_agents.trajectories import time_step as ts
 
 import cv2
 
-OBSERVATION_SHAPE = (4, )
+OBSERVATION_SHAPE = (3, )
 
 class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def __init__(self,
