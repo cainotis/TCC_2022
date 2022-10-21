@@ -45,20 +45,22 @@ class Evaluator:
 		if not (current_tile in self._last_tiles):
 			self._last_tiles[1] = self._last_tiles[0]
 			self._last_tiles[0] = current_tile
-			amount += 1e6
+			amount += 1e5
 
 		try:
 			angle = self._env.get_lane_pos2(self._env.cur_pos, self._env.cur_angle).angle_deg
 
 			if (abs(angle) > 45):
-				amount -= 1e5
+				amount -= 1e3
+			elif (abs(angle) > 40):
+				amount -= 1e2
 		except:
 			pass
 
 		if action is not None:
 			amount += self._actionBonus(action)
 
-		amount += self._env.speed / 10
+		# amount += self._env.speed / 10
 
 		return amount
 

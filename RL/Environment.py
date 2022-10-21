@@ -17,7 +17,7 @@ from tf_agents.trajectories import time_step as ts
 
 import cv2
 
-OBSERVATION_SHAPE = (3, )
+OBSERVATION_SHAPE = (2, )
 
 class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def __init__(self,
@@ -30,35 +30,10 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 
 		self._action2move = [
 			(0, -20),
-			(0, -10),
-			(0, 0),
-			(0, 10),
-			(0, 20),
 
-			(0.25, -20),
-			(0.25, -10),
-			(0.25, 0),
-			(0.25, 10),
-			(0.25, 20),
-
-			(0.5, -20),
-			(0.5, -10),
-			(0.5, 0),
-			(0.5, 10),
-			(0.5, 20),
-
-			(0.75, -20),
-			(0.75, -10),
 			(0.75, 0),
-			(0.75, 10),
-			(0.75, 20),
 
-			(1, -20),
-			(1, -10),
-			(1, 0),
-			(1, 10),
-			(1, 20),
-
+			(0, 20),
 		]
 		
 		self._action_spec = array_spec.BoundedArraySpec(
@@ -72,8 +47,8 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 		self._observation_spec = array_spec.BoundedArraySpec(
 			shape=OBSERVATION_SHAPE,
 			dtype=np.float64,
-			minimum=[-1, -1, -90],
-			maximum=[1, 1, 90],
+			minimum=[-1, -90],
+			maximum=[1, 90],
 			name='observation'
 		)
 
@@ -120,7 +95,7 @@ class Environment(BaseEnvironment, py_environment.PyEnvironment):
 	def _state(self):
 		try :
 			aux = self.get_lane_pos2(self.cur_pos, self.cur_angle)
-			ret = np.float64([aux.dist, aux.dot_dir, aux.angle_deg])
+			ret = np.float64([aux.dist, aux.angle_deg])
 			self._last_step = ret
 		except:
 			ret = self._last_step

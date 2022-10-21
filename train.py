@@ -54,7 +54,7 @@ from tf_agents.policies import PolicySaver
 from RL import Environment, EvaluationError
 from datetime import datetime
 
-time2stop = datetime(2022, 9, 9, 9, 0, 0, 0)
+time2stop = datetime(2022, 10, 20, 22, 0, 0, 0)
 
 initial_collect_steps = 100  # @param {type:"integer"}
 collect_steps_per_iteration = 1 # @param {type:"integer"}
@@ -116,10 +116,12 @@ num_actions = action_tensor_spec.maximum - action_tensor_spec.minimum + 1
 # activation and kernel initializer.
 def dense_layer(num_units):
 	return tf.keras.layers.Dense(
-			num_units,
-			activation=tf.keras.activations.relu,
-			kernel_initializer=tf.keras.initializers.VarianceScaling(
-					scale=2.0, mode='fan_in', distribution='truncated_normal'))
+		num_units,
+		activation=tf.keras.activations.relu,
+		kernel_initializer=tf.keras.initializers.VarianceScaling(
+			scale=2.0, mode='fan_in', distribution='truncated_normal'
+		)
+	)
 
 # QNetwork consists of a sequence of Dense layers followed by a dense layer
 # with `num_actions` units to generate one q_value per available action as
@@ -243,7 +245,6 @@ dataset
 
 iterator = iter(dataset)
 print(iterator)
-
 
 # (Optional) Optimize by wrapping some of the code in a graph using TF function.
 agent.train = common.function(agent.train)
